@@ -17,7 +17,8 @@ data = {
     "IN_DEFAULT_WORKS_KOUHO_MAX": 20,
     "IN_DEFAULT_WORKS_KOUHO_SEQ": 1,
     "IN_WORKS_TITLE_OPTION1": 0,
-    "IN_WORKS_TITLE_NAME1": "City of Stars",
+    # "IN_WORKS_TITLE_NAME1": "City of Stars",
+    "IN_WORKS_TITLE_NAME1": "Faded",
     "IN_WORKS_TITLE_TYPE1": 0,
     "IN_WORKS_TITLE_CONDITION": 0,
     "IN_WORKS_TITLE_OPTION2": 0,
@@ -28,13 +29,15 @@ data = {
     "IN_KEN_NAME_OPTION2": 0,
     "IN_KEN_NAME_JOB2": 0,
     "IN_ARTIST_NAME_OPTION1": 0,
-    "IN_ARTIST_NAME1": "Ryan Gosling",
-    "IN_ARTIST_NAME_CONDITION": 1,
+    # "IN_ARTIST_NAME1": "Ryan Gosling",
+    "IN_ARTIST_NAME1": "Alan Walker",
+    # "IN_ARTIST_NAME_CONDITION": 1,
+    "IN_ARTIST_NAME_CONDITION": 0,
     "IN_ARTIST_NAME_OPTION2": 0,
-    "IN_ARTIST_NAME2": "Emma Stone",
+    # "IN_ARTIST_NAME2": "Emma Stone",
     "IN_DEFAULT_SEARCH_WORKS_NAIGAI": 0,
     "RESULT_CURRENT_PAGE": 1
 }
 
 r = requests.post(request_url, data=data, headers=headers, params=payload)
-print r, r.status_code, r.text
+print(r.text)
