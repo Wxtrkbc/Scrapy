@@ -6,11 +6,11 @@ payload = {'trxID': 'A00401-3'}
 headers = {
     'Cookie': 'JSESSIONID=L-yPn8PiASo7RWge9a3IuseJ; BIGipServerpool_eJwid=3256656394.21504.0000;'
               ' _ga=GA1.3.220186252.1488880843',
-    'Host': 'www2.jasrac.or.jp',
-    'Origin': 'http://www2.jasrac.or.jp',
-    'Referer': 'http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=A00401-2',
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/537.36 '
-                  '(KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
+    # 'Host': 'www2.jasrac.or.jp',
+    # 'Origin': 'http://www2.jasrac.or.jp',
+    # 'Referer': 'http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=A00401-2',
+    # 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/537.36 '
+    #               '(KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
 }
 
 data = {
