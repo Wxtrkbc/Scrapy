@@ -23,12 +23,17 @@ class SongSpider(scrapy.Spider):
                 headers=settings.HEADERS,
                 formdata=_generate_query_params_dict(name, authors),
                 cookies=settings.DEFAULT_COOKIES,
-                callback=self.parse_url
+                callback=self.parse_url,
+                meta={
+                    "name": name,
+                    "authors": authors
+                }
             )
 
     def parse(self, response):
         trs = response.xpath('//body/table[@class="contentsTable"]/tr')
-        data_list = [0] * len(trs)
+        song_info = response.meta['name'] + '--' + response.meta['authors']
+        data_list = [0] * (len(trs) + 1)
         for index, item in enumerate(trs):
             temp = None
             if index < 1:
@@ -40,7 +45,8 @@ class SongSpider(scrapy.Spider):
             else:
                 tds = item.xpath('.//td')
                 temp = _format_tds(tds)
-            data_list[index] = temp
+            data_list[index+1] = temp
+        data_list[0] = [song_info]
         _change_to_csv('data.csv', data_list)
 
     def parse_url(self, response):
@@ -52,6 +58,7 @@ class SongSpider(scrapy.Spider):
                 headers=settings.HEADERS,
                 cookies=settings.DEFAULT_COOKIES,
                 callback=self.parse,
+                meta=response.meta
             )
 
 

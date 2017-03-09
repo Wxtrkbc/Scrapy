@@ -28,7 +28,7 @@ class SongsSpiderMiddleware(object):
         return None
 
     def process_spider_output(response, result, spider):
-        # Called with the results returned from the Spider, after
+        # Called with the test_results returned from the Spider, after
         # it has processed the response.
 
         # Must return an iterable of Request, dict or Item objects.
