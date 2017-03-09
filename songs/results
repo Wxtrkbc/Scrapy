@@ -1,0 +1,16 @@
+
+[
+    ['権利者情報', '管理状況', '演奏', '録音', '出版', '貸与', 'ビデオ', '映画', 'CM', 'ゲーム', '放送', '配信', '通カラ', '注意'],
+    ['No.', '権利者', '識別', '契約', '信託状況', '所属団体', 'img/management_icon_J.png', 'img/management_icon_J.png', 'img/manageme/management_icon_J.png', 'img/management_icon_batsu.png', 'img/management_icon_batsu.png', 'img/management_icon_J.png', 'img/management_icon_J.png', 'img/management_icon_J.png', 'img/management_icon_J.png', '\xa0'],
+    ['1', 'BORGEN JESPER', ' ', '作曲作詞', ' 演録M', '演:TONO\xa0録:NCB', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    ['2', 'FROEEN ANDERS', ' ', '作曲作詞', ' ', '演録M', '演:TONO\xa0録:NCB', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    ['3', 'GREVE GUNNAR', ' ', '作曲', '演:TONO\xa0録:NCB', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    ['4', 'WALKER ALAN', ' ', '作曲作詞', ' ', '演録M', '演:TONO\xa0録:NCB', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    ['5', 'WARNER CHAPPELL MUSIC NORWAY(A)3, ' ', '出版者\xa0', ' ', '演録M', '演:TONO\xa0録:NCB', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', 'ワーナー・チャペル音楽出版\u3000株式会社\u3000Ｓｙｎｃｈ事業部', ' ', 'サブ出版', ' ', '部分信託', 'JASRAC', ' ', ' ', 'img/managementment_icon_sharp.png', 'img/management_icon_sharp.png', ' ', ' ', ' ', ' ', ' '],
+    [' ', 'ヤマハミュージックパブリッシング', ' ', 'サブ出版', ' ', '全信託', 'JASRAC', 'img/management_icon_hyphen.png', 'img/management_icon_hyphen.png', ' ', 'img/management_icongement_icon_hyphen.png', 'img/management_icon_hyphen.png', 'img/management_icon_hyphen.png', 'img/management_icon_hyphen.png', 'img/management_icon_hyphen.png', ' ', 'img/management_icon_hyphen.png', ' '],
+    ['6', 'SONY/ATV MUS PUB ALLEGRO SCANDINAVIA', ' ', '出版者\xa0', ' ', '演録M', '演:STIM\xa0録:NCB', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', 'ソニー・ミュージックパブリッシング\u3000Ａ事業部', ' ', 'サブ出版', ' ', '部分信託', 'JASRAC', ' ', ' ', ' ', ' ', ' ', 'img/management_icon_sp.png', 'img/management_icon_sharp.png', ' ', ' ', ' ', ' '],
+    ['7', 'UNKNOWN PUBLISHER', ' ', '出版者\xa0', ' ', '無信託', '演録:NS', 'img/management_icon_sharp.png', 'img/management_icon_sharp.png', 'img/management_icon_sharp.png', 'img/management_icon_shar'img/management_icon_sharp.png', 'img/management_icon_sharp.png', 'img/management_icon_sharp.png', 'img/management_icon_sharp.png', 'img/management_icon_sharp.png', 'img/management_icon_sharp.png', 'img/management_icon_sharp.png', ' ']
+]
+

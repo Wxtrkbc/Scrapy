@@ -128,7 +128,7 @@ HEADERS = {
 }
 
 DEFAULT_COOKIES = {
-    'JSESSIONID': '6ZY9XlX5LntT6EwevnA1ycuH',
+    'JSESSIONID': 'wq5YOmGMQyi2DbMcQWk1WYNp',
     'BIGipServerpool_eJwid': '3256656394.21504.0000',
     '_ga': 'GA1.3.220186252.1488880843'
 }
