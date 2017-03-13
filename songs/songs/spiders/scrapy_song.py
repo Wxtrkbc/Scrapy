@@ -64,6 +64,8 @@ class SongSpider(scrapy.Spider):
 
 def _generate_query_params_dict(name, author):
     settings.DEFAULT_QUERY_PARAMS['IN_WORKS_TITLE_NAME1'] = name
+    if '(' in author:
+        author = author.replace('(', ';').replace(')', '')
     author_list = author.split(';')
     settings.DEFAULT_QUERY_PARAMS['IN_ARTIST_NAME1'] = author_list[0]
     if 2 == len(author_list):
