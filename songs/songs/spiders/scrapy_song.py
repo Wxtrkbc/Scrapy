@@ -3,10 +3,25 @@
 import scrapy
 import json
 import csv
+import random
+import time
+
 from scrapy.http.request import Request
 from scrapy.http import FormRequest
 from songs import settings
 from pprint import pprint
+
+from songs.spiders.langconv import *
+
+PROXIES = [
+    {'ip_port': '115.28.168.247:80'},
+    {'ip_port': '203.91.121.74:3128'},
+    {'ip_port': '124.207.132.242:3128'},
+    {'ip_port': '124.234.157.250:80'},
+    {'ip_port': '218.241.181.202:8080'},
+]
+
+DOWNLOAD_DELAY = 1
 
 
 class SongSpider(scrapy.Spider):
@@ -18,6 +33,8 @@ class SongSpider(scrapy.Spider):
 
     def start_requests(self):
         for name, authors in _generate_search_data().items():
+            time.sleep(DOWNLOAD_DELAY)
+            proxy = random.choice(PROXIES)
             yield FormRequest(
                 self.start_urls[0],
                 headers=settings.HEADERS,
@@ -26,7 +43,9 @@ class SongSpider(scrapy.Spider):
                 callback=self.parse_url,
                 meta={
                     "name": name,
-                    "authors": authors
+                    "authors": authors,
+                    "proxy": "http://{}".format(proxy['ip_port']),
+                    "proxy_item": proxy
                 }
             )
 
@@ -45,14 +64,20 @@ class SongSpider(scrapy.Spider):
             else:
                 tds = item.xpath('.//td')
                 temp = _format_tds(tds)
-            data_list[index+1] = temp
+            data_list[index + 1] = temp
         data_list[0] = [song_info]
         _change_to_csv('data.csv', data_list)
 
     def parse_url(self, response):
         # ['main.jsp?trxID=F20101&WORKS_CD=1I711549&subSessionID=001&subSession=start']
+        if response.status == 403:
+            proxy_id = PROXIES.index(response.meta['proxy_item'])
+            del PROXIES[proxy_id]
+            return None
         params = response.xpath("//tr/td/a/@href").extract()
+        print(params, 'xxxx')
         for param in params:
+            time.sleep(DOWNLOAD_DELAY)
             yield Request(
                 settings.GET_URL + param,
                 headers=settings.HEADERS,
@@ -78,7 +103,11 @@ def _generate_search_data():
     # with open('../../test_data.json') as f:
     with open('test_data.json') as f:
         test_data = json.load(f)
-        return test_data
+
+        # 简体转换繁体
+        print({Converter('zh-hant').convert(k): Converter('zh-hant').convert(v) for k, v in test_data.items()})
+        return {Converter('zh-hant').convert(k): Converter('zh-hant').convert(v) for k, v in
+                test_data.items()}
 
 
 def _format_first_ths(ths):
@@ -96,7 +125,7 @@ def _format_other_ths(ths):
     th_list = []
     for th in ths:
         if th.xpath('.//img'):
-            th_list.append(th.xpath('.//img/@src').extract()[0])
+            th_list.append(_map_rights[th.xpath('.//img/@src').extract()[0]])
         else:
             th_list.append(th.xpath('.//text()').extract()[0])
     return th_list
@@ -111,7 +140,8 @@ def _format_tds(tds):
             data = td.xpath('.//div/text()').extract()[0]
             td_list.append(data if str(data) != '\xa0' else ' ')
         else:
-            td_list.append(td.xpath('.//img/@src').extract()[0] if td.xpath('.//img/@src') else ' ')
+            td_list.append(_map_rights[td.xpath('.//img/@src').extract()[0]] if td.xpath(
+                './/img/@src') else ' ')
     return td_list
 
 
@@ -128,3 +158,24 @@ def _fill_none_str_for_th(th_list):
     for i in range(2):
         th_list.insert(5, ' ')
     return th_list
+
+
+# http://www2.jasrac.or.jp/eJwid/help/help_words.html#iswc
+_map_rights = {
+    'img/management_icon_J.png': 'V',
+    'img/management_icon_batsu.png': 'X',
+    'img/management_icon_sharp.png': '#',
+    'img/management_icon_hyphen.png': '-',
+    'img/management_icon_confirmation.png': '确认',
+    'img/management_icon_lapse.png': '消失',
+    'img/management_icon_lapse_pd.png': '消失',
+    'img/management_icon_undecided.png': '未确定',
+    'img/management_icon_exclusive.png': '专属',
+}
+
+# a = _generate_search_data()
+# print(a)
+
+
+# line = Converter('zh-hant').convert('\u5f20\u6770(Jason Zhang)')
+# print(line)

@@ -4,24 +4,23 @@ import scrapy
 import json
 
 from scrapy.http.request import Request
-from scrapy.utils.project import get_project_settings
-from pprint import pprint
-from xiami import settings
 from collections import namedtuple, OrderedDict
 
 
 # settings = get_project_settings()
 
 
+REP_DICT = OrderedDict()
+
+
 class SongSpider(scrapy.Spider):
     name = 'xiami'
     allowed_domains = ['http://www.xiami.com/']
     start_urls = [
-        # 'http://www.xiami.com/chart/data?c=101&type=1&page=1&limit=10&_=1489373183480',  # 华语
-        'http://www.xiami.com/chart/data?c=101&type=2&page=1&limit=10&_=1489373255985',  # 欧美
-        # 'http://www.xiami.com/chart/data?c=101&type=3&page=1&limit=200&_=1489373380493',  # 日本
-        # 'http://www.xiami.com/chart/data?c=101&type=4&page=1&limit=200&_=1489373475758',   # 韩国
-
+        'http://www.xiami.com/chart/data?c=101&type=1&page=1&limit=100&_=1489373183480',  # 华语
+        'http://www.xiami.com/chart/data?c=101&type=2&page=1&limit=400&_=1489373255985',  # 欧美
+        'http://www.xiami.com/chart/data?c=101&type=3&page=1&limit=400&_=1489373380493',  # 日本
+        'http://www.xiami.com/chart/data?c=101&type=4&page=1&limit=300&_=1489373475758',  # 韩国
     ]
 
     def start_requests(self):
@@ -36,8 +35,13 @@ class SongSpider(scrapy.Spider):
     def parse(self, response):
         td_songs = response.xpath("//td[@class='songblock']")
         rep_dict = _generate_song_info_dict_from_tds(td_songs)
-        with open('../songs/song_data.json', 'a+') as f:
-            json.dump(rep_dict, f)
+        REP_DICT.update(rep_dict)
+
+    @staticmethod
+    def close(spider, reason):
+        with open('../songs/song_data.json', 'w+') as f:
+            json.dump(REP_DICT, f)
+        scrapy.Spider.close(spider, reason)
 
 
 def _generate_song_info_dict_from_tds(tds):
