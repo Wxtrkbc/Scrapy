@@ -11,6 +11,7 @@ from scrapy.http import FormRequest
 from songs import settings
 from pprint import pprint
 
+from songs.spiders.pinyin import PinYin
 from songs.spiders.langconv import *
 
 PROXIES = [
@@ -20,8 +21,20 @@ PROXIES = [
     {'ip_port': '124.234.157.250:80'},
     {'ip_port': '218.241.181.202:8080'},
 ]
-
 DOWNLOAD_DELAY = 1
+
+# http://www2.jasrac.or.jp/eJwid/help/help_words.html#iswc
+_map_rights = {
+    'img/management_icon_J.png': 'V',
+    'img/management_icon_batsu.png': 'X',
+    'img/management_icon_sharp.png': '#',
+    'img/management_icon_hyphen.png': '-',
+    'img/management_icon_confirmation.png': '确认',
+    'img/management_icon_lapse.png': '消失',
+    'img/management_icon_lapse_pd.png': '消失',
+    'img/management_icon_undecided.png': '未确定',
+    'img/management_icon_exclusive.png': '专属',
+}
 
 
 class SongSpider(scrapy.Spider):
@@ -31,8 +44,12 @@ class SongSpider(scrapy.Spider):
         settings.POST_URL
     ]
 
+    # 汉字转拼音
+    pinyin = PinYin()
+    pinyin.load_word()
+
     def start_requests(self):
-        for name, authors in _generate_search_data().items():
+        for name, authors in _generate_search_data(self.pinyin).items():
             time.sleep(DOWNLOAD_DELAY)
             proxy = random.choice(PROXIES)
             yield FormRequest(
@@ -92,22 +109,24 @@ def _generate_query_params_dict(name, author):
     if '(' in author:
         author = author.replace('(', ';').replace(')', '')
     author_list = author.split(';')
-    settings.DEFAULT_QUERY_PARAMS['IN_ARTIST_NAME1'] = author_list[0]
+    settings.DEFAULT_QUERY_PARAMS['IN_ARTIST_NAME1'] = _format_author_name(author_list[0])
     if 2 == len(author_list):
         settings.DEFAULT_QUERY_PARAMS['IN_ARTIST_NAME_CONDITION'] = str(1)
-        settings.DEFAULT_QUERY_PARAMS['IN_ARTIST_NAME2'] = author_list[1]
+        settings.DEFAULT_QUERY_PARAMS['IN_ARTIST_NAME2'] = _format_author_name(author_list[1])
     return settings.DEFAULT_QUERY_PARAMS
 
 
-def _generate_search_data():
+def _generate_search_data(converter):
     # with open('../../test_data.json') as f:
     with open('test_data.json') as f:
         test_data = json.load(f)
+        # 歌名转拼音， 歌手转换繁体
+        print({str(converter.hanzi2pinyin_split(string=k, split='').upper()): Converter(
+            'zh-hant').convert(v) for k, v in test_data.items()})
 
-        # 简体转换繁体
-        print({Converter('zh-hant').convert(k): Converter('zh-hant').convert(v) for k, v in test_data.items()})
-        return {Converter('zh-hant').convert(k): Converter('zh-hant').convert(v) for k, v in
-                test_data.items()}
+        return {str(converter.hanzi2pinyin_split(string=k, split='').upper()): Converter(
+            'zh-hant').convert(v) for k, v in test_data.items()}
+        # return test_data
 
 
 def _format_first_ths(ths):
@@ -118,7 +137,7 @@ def _format_first_ths(ths):
         else:
             th_list.append(th.xpath('.//text()').extract()[0])
 
-    return _fill_none_str_for_th(th_list)
+    return _fill_null_str_for_th(th_list)
 
 
 def _format_other_ths(ths):
@@ -152,7 +171,7 @@ def _change_to_csv(file_name, data_list):
             csv_writer.writerow(data)
 
 
-def _fill_none_str_for_th(th_list):
+def _fill_null_str_for_th(th_list):
     for i in range(3):
         th_list.insert(1, ' ')
     for i in range(2):
@@ -160,22 +179,13 @@ def _fill_none_str_for_th(th_list):
     return th_list
 
 
-# http://www2.jasrac.or.jp/eJwid/help/help_words.html#iswc
-_map_rights = {
-    'img/management_icon_J.png': 'V',
-    'img/management_icon_batsu.png': 'X',
-    'img/management_icon_sharp.png': '#',
-    'img/management_icon_hyphen.png': '-',
-    'img/management_icon_confirmation.png': '确认',
-    'img/management_icon_lapse.png': '消失',
-    'img/management_icon_lapse_pd.png': '消失',
-    'img/management_icon_undecided.png': '未确定',
-    'img/management_icon_exclusive.png': '专属',
-}
+def _format_author_name(name):
+    """
+    李多强  ---》  李 多强
+    """
 
-# a = _generate_search_data()
-# print(a)
-
-
-# line = Converter('zh-hant').convert('\u5f20\u6770(Jason Zhang)')
-# print(line)
+    if len(name) == 3:
+        name_list = list(name)
+        name_list.insert(1, ' ')
+        return ''.join(name_list)
+    return name
