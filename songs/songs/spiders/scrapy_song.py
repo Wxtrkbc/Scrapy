@@ -60,7 +60,6 @@ class SongSpider(scrapy.Spider):
                 callback=self.parse_url,
                 meta={
                     "name": name,
-                    "authors": authors,
                     "proxy": "http://{}".format(proxy['ip_port']),
                     "proxy_item": proxy
                 }
@@ -68,7 +67,11 @@ class SongSpider(scrapy.Spider):
 
     def parse(self, response):
         trs = response.xpath('//body/table[@class="contentsTable"]/tr')
-        song_info = response.meta['name'] + '--' + response.meta['authors']
+        # last_table = response.xpath('//body/table[last()]')
+        # /html/body/table[5]/tbody/tr/td[2]/table/tbody/tr/td/table/tbody/tr[4]/td[2]
+        # /html/body/table[5]/tbody/tr/td[2]/table/tbody/tr/td/table/tbody/tr[3]/td[2]
+        # /html/body/table[last()]/tbody/tr/td[last()]/table/tbody/tr/td/table/tbody/tr[last()]/td[last()]
+        song_info = response.meta['name']
         data_list = [0] * (len(trs) + 1)
         for index, item in enumerate(trs):
             temp = None
@@ -106,13 +109,13 @@ class SongSpider(scrapy.Spider):
 
 def _generate_query_params_dict(name, author):
     settings.DEFAULT_QUERY_PARAMS['IN_WORKS_TITLE_NAME1'] = name
-    if '(' in author:
-        author = author.replace('(', ';').replace(')', '')
-    author_list = author.split(';')
-    settings.DEFAULT_QUERY_PARAMS['IN_ARTIST_NAME1'] = _format_author_name(author_list[0])
-    if 2 == len(author_list):
-        settings.DEFAULT_QUERY_PARAMS['IN_ARTIST_NAME_CONDITION'] = str(1)
-        settings.DEFAULT_QUERY_PARAMS['IN_ARTIST_NAME2'] = _format_author_name(author_list[1])
+    # if '(' in author:
+    #     author = author.replace('(', ';').replace(')', '')
+    # author_list = author.split(';')
+    # settings.DEFAULT_QUERY_PARAMS['IN_ARTIST_NAME1'] = _format_author_name(author_list[0])
+    # if 2 == len(author_list):
+    #     settings.DEFAULT_QUERY_PARAMS['IN_ARTIST_NAME_CONDITION'] = str(1)
+    #     settings.DEFAULT_QUERY_PARAMS['IN_ARTIST_NAME2'] = _format_author_name(author_list[1])
     return settings.DEFAULT_QUERY_PARAMS
 
 
@@ -121,8 +124,6 @@ def _generate_search_data(converter):
     with open('test_data.json') as f:
         test_data = json.load(f)
         # 歌名转拼音， 歌手转换繁体
-        print({str(converter.hanzi2pinyin_split(string=k, split='').upper()): Converter(
-            'zh-hant').convert(v) for k, v in test_data.items()})
 
         return {str(converter.hanzi2pinyin_split(string=k, split='').upper()): Converter(
             'zh-hant').convert(v) for k, v in test_data.items()}
@@ -154,12 +155,16 @@ def _format_tds(tds):
     td_list = []
     for td in tds:
         if td.xpath('.//span'):
-            td_list.append(td.xpath('.//span/text()').extract()[0])
-        if td.xpath('.//div'):
-            data = td.xpath('.//div/text()').extract()[0]
+            if not td.xpath('.//span/text()'):
+                td_list.append(td.xpath('.//span//font/text()').extract()[0])
+            else:
+                td_list.append(td.xpath('.//span/text()').extract()[0])
+
+        elif td.xpath('.//div'):
+            data = td.xpath('./div/text()').extract()[0]
             td_list.append(data if str(data) != '\xa0' else ' ')
         else:
-            td_list.append(_map_rights[td.xpath('.//img/@src').extract()[0]] if td.xpath(
+            td_list.append(td.xpath('.//img/@src').extract()[0] if td.xpath(
                 './/img/@src') else ' ')
     return td_list
 
@@ -183,9 +188,10 @@ def _format_author_name(name):
     """
     李多强  ---》  李 多强
     """
-
     if len(name) == 3:
         name_list = list(name)
         name_list.insert(1, ' ')
         return ''.join(name_list)
     return name
+
+
